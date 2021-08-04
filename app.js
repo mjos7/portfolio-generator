@@ -2,16 +2,8 @@
 
 const inquirer = require('inquirer');
 
-// const fs = require('fs');
-// const generatePage = require('./src/page-template');
-
-// const pageHTML = generatePage(name, github);
-
-// fs.writeFile('./index.html', pageHTML, err => {
-//   if (err) throw err;
-
-//   console.log('Portfolio complete! Check out index.html to see the output!');
-// });
+const fs = require('fs');
+const generatePage = require('./src/page-template');
 
 const promptUser = () => {
   return inquirer.prompt([
@@ -155,5 +147,56 @@ Add a New Project
 promptUser()
   .then(promptProject)
   .then(portfolioData => {
-    console.log(portfolioData);
+    const pageHTML = generatePage(portfolioData);
+    fs.writeFile('./index.html', pageHTML, err => {
+      if (err) throw new Error(err);
+      console.log(
+        'Page created! Check out index.html in this directory to see it!'
+      );
+    });
   });
+
+// const mockData = {
+//   name: 'Mark Joseph',
+//   github: 'mjos7',
+//   confirmAbout: true,
+//   about: 'I live in Vancouver and I love to code',
+//   projects: [
+//     {
+//       name: 'Run Buddy',
+//       description: `This is a description of Run Buddy`,
+//       languages: ['HTML', 'CSS'],
+//       link: 'https://github.com/mjos7/run-buddy',
+//       feature: true,
+//       confirmAddProject: true,
+//     },
+//     {
+//       name: 'Taskinator',
+//       description: `This is a description of Taskinator`,
+//       languages: ['JavaScript', 'HTML', 'CSS'],
+//       link: 'https://github.com/mjos7/taskinator',
+//       feature: true,
+//       confirmAddProject: true,
+//     },
+//     {
+//       name: 'Taskmaster Pro',
+//       description: `This is a description of Taskmaster Pro`,
+//       languages: ['JavaScript', 'jQuery', 'CSS', 'HTML', 'Bootstrap'],
+//       link: 'https://github.com/mjos7/taskmaster-pro',
+//       feature: false,
+//       confirmAddProject: true,
+//     },
+//     {
+//       name: 'Robot Gladiators',
+//       description: `This is a description of Robot Gladiators`,
+//       languages: ['JavaScript'],
+//       link: 'https://github.com/mjos7/robot-gladiators',
+//       feature: false,
+//       confirmAddProject: false,
+//     },
+//   ],
+// };
+
+// const pageHTML = generatePage(mockData);
+
+// console.log(mockData);

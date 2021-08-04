@@ -1,9 +1,8 @@
 'use strict';
 
 const inquirer = require('inquirer');
-
-const fs = require('fs');
 const generatePage = require('./src/page-template');
+const { writeFile, copyFile } = require('./utils/generate-site.js');
 
 const promptUser = () => {
   return inquirer.prompt([
@@ -44,13 +43,7 @@ const promptUser = () => {
       type: 'input',
       name: 'about',
       message: 'Provide some information about yourself:',
-      when: ({ confirmAbout }) => {
-        if (confirmAbout) {
-          return true;
-        } else {
-          return false;
-        }
-      },
+      when: ({ confirmAbout }) => confirmAbout,
     },
   ]);
 };
@@ -89,7 +82,7 @@ Add a New Project
           if (projDescription) {
             return true;
           } else {
-            console.log('Please enter your Project Description');
+            console.log('Please enter a Project Description');
             return false;
           }
         },
@@ -147,56 +140,18 @@ Add a New Project
 promptUser()
   .then(promptProject)
   .then(portfolioData => {
-    const pageHTML = generatePage(portfolioData);
-    fs.writeFile('./index.html', pageHTML, err => {
-      if (err) throw new Error(err);
-      console.log(
-        'Page created! Check out index.html in this directory to see it!'
-      );
-    });
+    return generatePage(portfolioData);
+  })
+  .then(pageHTML => {
+    return writeFile(pageHTML);
+  })
+  .then(writeFileResponse => {
+    console.log(writeFileResponse);
+    return copyFile();
+  })
+  .then(copyFileResponse => {
+    console.log(copyFileResponse);
+  })
+  .catch(err => {
+    console.log(err);
   });
-
-// const mockData = {
-//   name: 'Mark Joseph',
-//   github: 'mjos7',
-//   confirmAbout: true,
-//   about: 'I live in Vancouver and I love to code',
-//   projects: [
-//     {
-//       name: 'Run Buddy',
-//       description: `This is a description of Run Buddy`,
-//       languages: ['HTML', 'CSS'],
-//       link: 'https://github.com/mjos7/run-buddy',
-//       feature: true,
-//       confirmAddProject: true,
-//     },
-//     {
-//       name: 'Taskinator',
-//       description: `This is a description of Taskinator`,
-//       languages: ['JavaScript', 'HTML', 'CSS'],
-//       link: 'https://github.com/mjos7/taskinator',
-//       feature: true,
-//       confirmAddProject: true,
-//     },
-//     {
-//       name: 'Taskmaster Pro',
-//       description: `This is a description of Taskmaster Pro`,
-//       languages: ['JavaScript', 'jQuery', 'CSS', 'HTML', 'Bootstrap'],
-//       link: 'https://github.com/mjos7/taskmaster-pro',
-//       feature: false,
-//       confirmAddProject: true,
-//     },
-//     {
-//       name: 'Robot Gladiators',
-//       description: `This is a description of Robot Gladiators`,
-//       languages: ['JavaScript'],
-//       link: 'https://github.com/mjos7/robot-gladiators',
-//       feature: false,
-//       confirmAddProject: false,
-//     },
-//   ],
-// };
-
-// const pageHTML = generatePage(mockData);
-
-// console.log(mockData);
